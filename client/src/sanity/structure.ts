@@ -8,12 +8,10 @@ export const structure: StructureResolver = (S) =>
     .title("Content")
     .items([
       S.listItem()
-        .title("Fetaured Projects")
-        .id("featuredProjects")
+        .title("Featured Projects")
+        .id("featured")
         .child(
-          S.document()
-            .schemaType("featuredProjects")
-            .documentId("featuredProjects"),
+          S.document().schemaType("featuredProjects").documentId("featured"),
         ),
 
       S.divider(),
