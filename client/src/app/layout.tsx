@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReactLenis } from "lenis/react";
 import CustomCursor from "./components/CustomCursor";
+import { TransitionProvider } from "./components/TransitionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Avani Rai",
-  description: "Avani Rai photographer and filmmaker",
+  title: "Harsh Jani",
+  description: "Harish Jani photographer and filmmaker",
 };
 
 export default function RootLayout({
@@ -30,7 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CustomCursor />
-        <ReactLenis root>{children}</ReactLenis>
+        <ReactLenis root>
+          <TransitionProvider>{children}</TransitionProvider>
+        </ReactLenis>
       </body>
     </html>
   );

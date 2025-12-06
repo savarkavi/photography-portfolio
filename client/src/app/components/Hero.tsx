@@ -9,81 +9,29 @@ import { Url } from "next/dist/shared/lib/router/router";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
+import { useTransition } from "./TransitionProvider";
 
 gsap.registerPlugin(useGSAP, Observer);
 
 type HeroProps = {
   featuredProjects: FETCH_FEATURED_PROJECTSResult;
-  isLoaded: boolean;
-  onProgress: (progress: number) => void;
-  onLoaded: () => void;
+  introComplete?: boolean;
 };
 
-const Hero = ({
-  featuredProjects,
-  isLoaded,
-  onProgress,
-  onLoaded,
-}: HeroProps) => {
+const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
   const heroContainerRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const { playTransition } = useTransition();
 
   const [activeIdx, setActiveIdx] = useState(0);
 
   const projects = featuredProjects?.projects;
   if (!projects) return null;
 
-  useEffect(() => {
-    if (!heroContainerRef.current) return;
-
-    const mediaElements = Array.from(
-      heroContainerRef.current.querySelectorAll("img, video"),
-    ) as (HTMLImageElement | HTMLVideoElement)[];
-
-    const totalMedia = mediaElements.length;
-
-    if (totalMedia === 0) {
-      onProgress(100);
-      onLoaded();
-      return;
-    }
-
-    let loadedCount = 0;
-
-    const updateProgress = () => {
-      loadedCount++;
-      const progress = (loadedCount / totalMedia) * 100;
-      onProgress(progress);
-
-      if (loadedCount === totalMedia) {
-        setTimeout(onLoaded, 100);
-      }
-    };
-
-    mediaElements.forEach((el) => {
-      if (el.tagName === "IMG") {
-        const img = el as HTMLImageElement;
-        if (img.complete) {
-          updateProgress();
-        } else {
-          img.onload = updateProgress;
-          img.onerror = updateProgress;
-        }
-      } else if (el.tagName === "VIDEO") {
-        const vid = el as HTMLVideoElement;
-        if (vid.readyState >= 4) {
-          updateProgress();
-        } else {
-          vid.oncanplaythrough = updateProgress;
-          vid.onerror = updateProgress;
-        }
-      }
-    });
-  }, [onProgress, onLoaded]);
-
   useGSAP(
     () => {
-      if (!isLoaded || !imageContainerRef.current) return;
+      if (!imageContainerRef.current) return;
       const images = gsap.utils.toArray<HTMLImageElement>(
         imageContainerRef.current.children,
       );
@@ -105,6 +53,7 @@ const Hero = ({
       gsap.set(images, { force3D: true, filter: "brightness(1)" });
 
       const tl = gsap.timeline({
+        paused: !introComplete,
         onComplete: () => {
           let currentX = initialX;
           let targetX = initialX;
@@ -201,21 +150,38 @@ const Hero = ({
         },
       });
 
-      tl.fromTo(
-        imageContainerRef.current,
-        { x: centerPos, opacity: 0, scale: 0.5 },
-        { x: initialX, opacity: 1, scale: 1, duration: 1, ease: "power2.out" },
-      )
-        .from(
-          [".avani-title-text", ".avani-info-text"],
-          { opacity: 0, x: -200 },
-          "<",
+      // Only add animations if intro is complete
+      if (introComplete) {
+        tl.fromTo(
+          imageContainerRef.current,
+          { x: centerPos, opacity: 0, scale: 0.5 },
+          {
+            x: initialX,
+            opacity: 1,
+            scale: 1,
+            duration: 1,
+            ease: "power2.out",
+          },
         )
-        .from(
-          [".rai-title-text", ".project-info-text"],
-          { opacity: 0, x: 200 },
-          "<",
-        );
+          .fromTo(
+            [".avani-title-text", ".avani-info-text"],
+            { opacity: 0, x: -200 },
+            { opacity: 1, x: 0, duration: 1 },
+            "<",
+          )
+          .fromTo(
+            [".rai-title-text", ".project-info-text"],
+            { opacity: 0, x: 200 },
+            { opacity: 1, x: 0, duration: 1 },
+            "<",
+          )
+          .fromTo(
+            ".instagram-info",
+            { opacity: 0, y: 100 },
+            { opacity: 1, y: 0 },
+            "<",
+          );
+      }
 
       return () => {
         if (scrollObserver) {
@@ -226,7 +192,7 @@ const Hero = ({
         }
       };
     },
-    { scope: heroContainerRef, dependencies: [isLoaded] },
+    { scope: heroContainerRef, dependencies: [introComplete] },
   );
 
   return (
@@ -235,12 +201,12 @@ const Hero = ({
       className="hero-container relative flex h-dvh flex-col justify-between overflow-hidden [perspective:1000px]"
     >
       <h1
-        className={`${gralice.className} avani-title-text absolute top-[14%] z-10 w-full text-center text-[20vw] leading-20 uppercase md:text-[16vw] xl:top-12 xl:left-6 xl:text-left xl:leading-50 2xl:top-20`}
+        className={`${gralice.className} avani-title-text absolute top-[14%] z-10 w-full text-center text-[20vw] leading-20 uppercase opacity-0 md:text-[15vw] xl:top-12 xl:left-6 xl:text-left xl:leading-50 2xl:top-20`}
       >
-        Avani <span className="xl:hidden">Rai</span>
+        Harsh <span className="xl:hidden">Jani</span>
       </h1>
       <div
-        className={`${oldNewsPaper.className} project-info-text absolute top-[72%] z-20 flex w-full flex-col items-center gap-4 px-4 text-[0.7rem] xl:top-26 xl:right-6 xl:w-auto xl:p-0 xl:text-[0.9rem] 2xl:text-base`}
+        className={`${oldNewsPaper.className} project-info-text absolute top-[72%] z-20 flex w-full flex-col items-center gap-4 px-4 text-[0.7rem] opacity-0 xl:top-26 xl:right-6 xl:w-auto xl:p-0 xl:text-[0.9rem] 2xl:text-base`}
       >
         <div
           className={`flex w-full justify-center gap-2 text-black uppercase`}
@@ -271,7 +237,10 @@ const Hero = ({
             const mediaUrl = item.coverMedia?.asset?.url;
             if (item.coverMedia?._type === "image") {
               return (
-                <Link href={`/works/${item._id}`} key={`first-${i}`}>
+                <div
+                  onClick={() => playTransition(`/works/${item._id}`)}
+                  key={`first-${i}`}
+                >
                   <Image
                     src={mediaUrl ? mediaUrl : ""}
                     alt="avani rai photography"
@@ -281,11 +250,14 @@ const Hero = ({
                     priority={i < 3}
                     loading="eager"
                   />
-                </Link>
+                </div>
               );
             } else {
               return (
-                <Link href={`/works/${item._id}`} key={`first-${i}`}>
+                <div
+                  onClick={() => playTransition(`/works/${item._id}`)}
+                  key={`first-${i}`}
+                >
                   <video
                     src={mediaUrl ? mediaUrl : ""}
                     className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
@@ -295,7 +267,7 @@ const Hero = ({
                     playsInline
                     preload="auto"
                   />
-                </Link>
+                </div>
               );
             }
           })}
@@ -306,7 +278,10 @@ const Hero = ({
 
             if (item.coverMedia?._type === "image") {
               return (
-                <Link href={`/works/${item._id}`} key={`second-${i}`}>
+                <div
+                  onClick={() => playTransition(`/works/${item._id}`)}
+                  key={`second-${i}`}
+                >
                   <Image
                     src={mediaUrl ? mediaUrl : ""}
                     alt="avani rai photography"
@@ -316,11 +291,14 @@ const Hero = ({
                     priority={i < 3}
                     loading="eager"
                   />
-                </Link>
+                </div>
               );
             } else {
               return (
-                <Link href={`/works/${item._id}`} key={`second-${i}`}>
+                <div
+                  onClick={() => playTransition(`/works/${item._id}`)}
+                  key={`second-${i}`}
+                >
                   <video
                     src={mediaUrl ? mediaUrl : ""}
                     className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
@@ -330,7 +308,7 @@ const Hero = ({
                     playsInline
                     preload="auto"
                   />
-                </Link>
+                </div>
               );
             }
           })}
@@ -341,7 +319,10 @@ const Hero = ({
 
             if (item.coverMedia?._type === "image") {
               return (
-                <Link href={`/works/${item._id}`} key={`third-${i}`}>
+                <div
+                  onClick={() => playTransition(`/works/${item._id}`)}
+                  key={`third-${i}`}
+                >
                   <Image
                     src={mediaUrl ? mediaUrl : ""}
                     alt="avani rai photography"
@@ -351,11 +332,14 @@ const Hero = ({
                     priority={i < 3}
                     loading="eager"
                   />
-                </Link>
+                </div>
               );
             } else {
               return (
-                <Link href={`/works/${item._id}`} key={`third-${i}`}>
+                <div
+                  onClick={() => playTransition(`/works/${item._id}`)}
+                  key={`third-${i}`}
+                >
                   <video
                     src={mediaUrl ? mediaUrl : ""}
                     className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
@@ -365,14 +349,14 @@ const Hero = ({
                     playsInline
                     preload="auto"
                   />
-                </Link>
+                </div>
               );
             }
           })}
         </>
       </div>
       <div
-        className={`${oldNewsPaper.className} instagram-info absolute top-[82%] left-1/2 flex -translate-1/2 flex-col items-center gap-2 uppercase xl:top-[75%]`}
+        className={`${oldNewsPaper.className} instagram-info absolute top-[82%] left-1/2 flex -translate-1/2 flex-col items-center gap-2 uppercase opacity-0 xl:top-[75%]`}
       >
         <p className="hidden xl:block">
           {activeIdx + 1} / {projects.length}
@@ -391,7 +375,7 @@ const Hero = ({
         <div className="absolute top-0 left-0 h-6 w-[1.5px] bg-white" />
         <div className="absolute top-0 left-0 h-6 w-[1.5px] rotate-90 bg-white" />
       </div>
-      <div className="avani-info-text absolute bottom-6 left-1/2 w-full -translate-x-1/2 px-8 sm:w-fit sm:px-0 xl:left-6 xl:translate-0">
+      <div className="avani-info-text absolute bottom-6 left-1/2 w-full -translate-x-1/2 px-8 opacity-0 sm:w-fit sm:px-0 xl:left-6 xl:translate-0">
         <div
           className={`${oldNewsPaper.className} relative px-6 py-2 text-center text-[0.7rem] uppercase before:absolute before:top-0 before:left-0 before:h-4 before:w-4 before:border-t-2 before:border-l-2 before:content-[''] after:absolute after:right-0 after:bottom-0 after:h-4 after:w-4 after:border-r-2 after:border-b-2 after:content-[''] xl:text-left xl:text-base`}
         >
@@ -400,9 +384,9 @@ const Hero = ({
         </div>
       </div>
       <h1
-        className={`${gralice.className} rai-title-text absolute right-8 bottom-0 z-10 hidden text-[16vw] leading-20 uppercase xl:block xl:leading-50 2xl:leading-56`}
+        className={`${gralice.className} rai-title-text absolute right-8 bottom-0 z-10 hidden text-[16vw] leading-20 uppercase opacity-0 xl:block xl:leading-50 2xl:leading-56`}
       >
-        Rai
+        Jani
       </h1>
     </div>
   );
