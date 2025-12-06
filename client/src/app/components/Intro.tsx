@@ -27,79 +27,84 @@ const Intro = ({ onComplete }: IntroProps) => {
     },
   ];
 
-  useGSAP(() => {
-    const imageContainers =
-      gsap.utils.toArray<HTMLDivElement>(".image-container");
+  useGSAP(
+    () => {
+      const imageContainers =
+        gsap.utils.toArray<HTMLDivElement>(".image-container");
 
-    const split = new SplitText(".title", { type: "chars" });
+      const split = new SplitText(".title", { type: "chars" });
 
-    const firstChar = split.chars[0];
-    const lastChar = split.chars[split.chars.length - 1];
+      const firstChar = split.chars[0];
+      const lastChar = split.chars[split.chars.length - 1];
 
-    const middleCharcters = split.chars.filter((char) => {
-      return char !== firstChar && char !== lastChar;
-    });
-
-    const masterTl = gsap.timeline({
-      onComplete: () => {
-        onComplete();
-      },
-    });
-    const imagesTl = gsap.timeline();
-
-    gsap.set(".title", { opacity: 1 });
-
-    const charctersIntroTl = gsap.timeline().from(split.chars, {
-      y: gsap.utils.wrap([100, -100]),
-      opacity: 0,
-      stagger: 0.05,
-    });
-
-    const middleCharctersTl = gsap
-      .timeline({ defaults: { ease: "power3.inOut" } })
-      .to(middleCharcters, {
-        y: gsap.utils.wrap([100, -100]),
-        stagger: 0.05,
-      })
-      .to(middleCharcters, {
-        width: 0,
-        margin: 0,
-        padding: 0,
+      const middleCharcters = split.chars.filter((char) => {
+        return char !== firstChar && char !== lastChar;
       });
 
-    imageContainers.forEach((container) => {
-      const image = container.querySelector(".image");
+      const masterTl = gsap.timeline({
+        onComplete: () => {
+          onComplete();
+        },
+      });
+      const imagesTl = gsap.timeline();
 
-      const imageTl = gsap
-        .timeline({ defaults: { duration: 1, ease: "expo.inOut" } })
-        .to(container, {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+      gsap.set(".title", { opacity: 1 });
+
+      const charctersIntroTl = gsap.timeline().from(split.chars, {
+        y: gsap.utils.wrap([100, -100]),
+        opacity: 0,
+        stagger: 0.05,
+      });
+
+      const middleCharctersTl = gsap
+        .timeline({ defaults: { ease: "power3.inOut" } })
+        .to(middleCharcters, {
+          y: gsap.utils.wrap([100, -100]),
+          stagger: 0.05,
         })
-        .to(image, { scale: 1.2 }, "<");
+        .to(middleCharcters, {
+          width: 0,
+          margin: 0,
+          padding: 0,
+        });
 
-      imagesTl.add(imageTl);
-    });
+      imageContainers.forEach((container) => {
+        const image = container.querySelector(".image");
 
-    const collapseImagesTl = gsap
-      .timeline({ defaults: { ease: "expo.inOut", duration: 1 } })
-      .to(imageContainers, {
+        if (!image) return;
+
+        const imageTl = gsap
+          .timeline({ defaults: { duration: 1, ease: "expo.inOut" } })
+          .to(container, {
+            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+          })
+          .to(image, { scale: 1.2 }, "<");
+
+        imagesTl.add(imageTl);
+      });
+
+      const collapseImagesTl = gsap
+        .timeline({ defaults: { ease: "expo.inOut", duration: 1 } })
+        .to(imageContainers, {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+        })
+        .to(".title", { bottom: "50%", translateY: "50%" }, "-=0.8");
+
+      const outroTl = gsap.timeline().to(".intro-container", {
         clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-      })
-      .to(".title", { bottom: "50%", translateY: "50%" }, "-=0.8");
+        ease: "power3.in",
+        duration: 0.8,
+      });
 
-    const outroTl = gsap.timeline().to(".intro-container", {
-      clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-      ease: "power3.in",
-      duration: 0.8,
-    });
-
-    masterTl
-      .add(imagesTl)
-      .add(charctersIntroTl, "<")
-      .add(middleCharctersTl)
-      .add(collapseImagesTl, "-=0.4")
-      .add(outroTl);
-  });
+      masterTl
+        .add(imagesTl)
+        .add(charctersIntroTl, "<")
+        .add(middleCharctersTl)
+        .add(collapseImagesTl, "-=0.4")
+        .add(outroTl);
+    },
+    { dependencies: [onComplete] },
+  );
 
   return (
     <div
