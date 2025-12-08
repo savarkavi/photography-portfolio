@@ -61,7 +61,9 @@ const MenuOverlay = ({ isOpen, onOpen }: MenuOverlayProps) => {
   return (
     <div className="menu-overlay invisible fixed top-0 left-0 z-90 flex h-screen w-full flex-col justify-between p-8 font-mono opacity-0 backdrop-blur-3xl">
       <div className="flex w-full items-center justify-between uppercase">
-        <p className={`${gralice.className} text-3xl xl:text-4xl`}>Avani Rai</p>
+        <p className={`${gralice.className} text-3xl xl:text-4xl`}>
+          Harsh Jani
+        </p>
         <p onClick={() => onOpen(false)} className="cursor-pointer">
           Close
         </p>

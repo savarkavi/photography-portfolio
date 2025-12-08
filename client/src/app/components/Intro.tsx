@@ -111,11 +111,11 @@ const Intro = ({ onComplete }: IntroProps) => {
       className="intro-container absolute top-0 left-0 z-10 flex h-screen w-full items-center justify-center bg-stone-950"
       style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
     >
-      <div className="relative h-[600px] w-[400px]">
+      <div className="relative h-[500px] w-[300px] md:h-[600px] md:w-[400px]">
         {images.map((image, i) => (
           <div
             key={i}
-            className="image-container absolute top-0 left-0 h-[500px] w-[400px]"
+            className="image-container absolute top-0 left-0 h-[400px] w-[300px] md:h-[500px] md:w-[400px]"
             style={{
               clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
             }}
@@ -130,7 +130,7 @@ const Intro = ({ onComplete }: IntroProps) => {
           </div>
         ))}
         <h1
-          className={`${gralice.className} title absolute bottom-16 left-1/2 -translate-x-1/2 scale-y-180 overflow-hidden text-7xl text-nowrap text-white uppercase opacity-0 mix-blend-difference`}
+          className={`${gralice.className} title absolute bottom-16 left-1/2 -translate-x-1/2 scale-y-180 overflow-hidden text-6xl text-nowrap text-white uppercase opacity-0 mix-blend-difference md:text-7xl`}
         >
           Harsh Jani
         </h1>

@@ -150,7 +150,6 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
         },
       });
 
-      // Only add animations if intro is complete
       if (introComplete) {
         tl.fromTo(
           imageContainerRef.current,
@@ -201,7 +200,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
       className="hero-container relative flex h-dvh flex-col justify-between overflow-hidden [perspective:1000px]"
     >
       <h1
-        className={`${gralice.className} avani-title-text absolute top-[14%] z-10 w-full text-center text-[20vw] leading-20 uppercase opacity-0 md:text-[15vw] xl:top-12 xl:left-6 xl:text-left xl:leading-50 2xl:top-20`}
+        className={`${gralice.className} avani-title-text absolute top-[14%] z-10 w-full text-center text-[16vw] leading-20 uppercase opacity-0 md:text-[15vw] xl:top-12 xl:left-6 xl:text-left xl:leading-50 2xl:top-20`}
       >
         Harsh <span className="xl:hidden">Jani</span>
       </h1>
@@ -238,6 +237,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
             if (item.coverMedia?._type === "image") {
               return (
                 <div
+                  className="cursor-pointer"
                   onClick={() => playTransition(`/works/${item._id}`)}
                   key={`first-${i}`}
                 >
@@ -245,7 +245,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
                     src={mediaUrl ? mediaUrl : ""}
                     alt="avani rai photography"
                     width={300}
-                    height={300}
+                    height={250}
                     className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
                     priority={i < 3}
                     loading="eager"
@@ -255,6 +255,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
             } else {
               return (
                 <div
+                  className="cursor-pointer"
                   onClick={() => playTransition(`/works/${item._id}`)}
                   key={`first-${i}`}
                 >
@@ -279,6 +280,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
             if (item.coverMedia?._type === "image") {
               return (
                 <div
+                  className="cursor-pointer"
                   onClick={() => playTransition(`/works/${item._id}`)}
                   key={`second-${i}`}
                 >
@@ -286,7 +288,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
                     src={mediaUrl ? mediaUrl : ""}
                     alt="avani rai photography"
                     width={300}
-                    height={300}
+                    height={250}
                     className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
                     priority={i < 3}
                     loading="eager"
@@ -296,6 +298,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
             } else {
               return (
                 <div
+                  className="cursor-pointer"
                   onClick={() => playTransition(`/works/${item._id}`)}
                   key={`second-${i}`}
                 >
@@ -320,6 +323,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
             if (item.coverMedia?._type === "image") {
               return (
                 <div
+                  className="cursor-pointer"
                   onClick={() => playTransition(`/works/${item._id}`)}
                   key={`third-${i}`}
                 >
@@ -327,7 +331,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
                     src={mediaUrl ? mediaUrl : ""}
                     alt="avani rai photography"
                     width={300}
-                    height={300}
+                    height={250}
                     className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
                     priority={i < 3}
                     loading="eager"
@@ -337,6 +341,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
             } else {
               return (
                 <div
+                  className="cursor-pointer"
                   onClick={() => playTransition(`/works/${item._id}`)}
                   key={`third-${i}`}
                 >
