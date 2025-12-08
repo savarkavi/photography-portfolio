@@ -13,8 +13,6 @@ const Page = async ({ params }: { params: Promise<{ workId: string }> }) => {
     },
   });
 
-  console.log(data);
-
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-black">
       <ProjectGallery projectId={workId} project={data} />

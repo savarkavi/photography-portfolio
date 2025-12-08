@@ -13,8 +13,6 @@ const Page = async ({ params }: { params: Promise<{ category: string }> }) => {
     },
   });
 
-  console.log(data);
-
   return (
     <div className="flex h-[calc(100vh-64px)]">
       <WorkList data={data} />
