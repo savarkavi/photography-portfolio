@@ -74,13 +74,14 @@ const ProjectGallery = ({ projectId, project }: ProjectGalleryProps) => {
                   className="relative flex h-full w-full items-center justify-center bg-white"
                 >
                   <Image
-                    src={item ? urlFor(item).url() : ""}
+                    src={item ? urlFor(item).quality(90).url() : ""}
                     alt="avani image"
                     width={item.asset?.metadata?.dimensions?.width}
                     height={item.asset?.metadata?.dimensions?.height}
                     className="h-full w-auto object-contain"
                     placeholder={mediaLQIP ? "blur" : "empty"}
                     blurDataURL={mediaLQIP}
+                    quality={90}
                   />
                 </div>
               )}
