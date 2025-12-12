@@ -59,7 +59,7 @@ export const avaniProfilePhotos = [
 ];
 
 export const menuItems = [
-  { name: "films", href: "/archive/films" },
+  // { name: "films", href: "/archive/films" },
   { name: "editorial", href: "/archive/editorial" },
   { name: "advertising", href: "/archive/advertising" },
   { name: "personal", href: "/archive/personal" },
