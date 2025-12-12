@@ -10,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { useTransition } from "./TransitionProvider";
+import { urlFor } from "@/sanity/lib/image";
 
 gsap.registerPlugin(useGSAP, Observer);
 
@@ -35,6 +36,9 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
       const images = gsap.utils.toArray<HTMLImageElement>(
         imageContainerRef.current.children,
       );
+      const rotatingElements = gsap.utils.toArray<HTMLElement>(
+        ".project-media-inner",
+      );
 
       const firstImage = images[0];
       if (!firstImage) return;
@@ -50,7 +54,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
       let scrollObserver: Observer | null = null;
       let updateAnimation: (() => void) | null = null;
 
-      gsap.set(images, { force3D: true, filter: "brightness(1)" });
+      gsap.set(rotatingElements, { force3D: true, filter: "brightness(1)" });
 
       const tl = gsap.timeline({
         paused: !introComplete,
@@ -87,12 +91,14 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
                 self.deltaY * rotationMultiplier,
               );
 
-              gsap.to(images, {
+              gsap.to(rotatingElements, {
                 rotateX: rotation,
+                transformOrigin: "center center",
                 duration: 1.5,
                 ease: "power2.out",
                 filter: "brightness(1.8)",
                 overwrite: "auto",
+                backfaceVisibility: "hidden",
               });
             },
             onDrag: (self) => {
@@ -115,16 +121,18 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
                 self.deltaX * rotationMultiplier,
               );
 
-              gsap.to(images, {
+              gsap.to(rotatingElements, {
                 rotateX: rotation,
+                transformOrigin: "center center",
                 duration: 1.5,
                 ease: "power2.out",
                 filter: "brightness(1.8)",
                 overwrite: "auto",
+                backfaceVisibility: "hidden",
               });
             },
             onStop: () => {
-              gsap.to(images, {
+              gsap.to(rotatingElements, {
                 rotateX: 0,
                 duration: 1.5,
                 filter: "brightness(1)",
@@ -202,7 +210,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
       <h1
         className={`${gralice.className} avani-title-text absolute top-[14%] z-10 w-full text-center text-[16vw] leading-20 uppercase opacity-0 md:text-[15vw] xl:top-12 xl:left-6 xl:text-left xl:leading-50 2xl:top-20`}
       >
-        Harsh <span className="xl:hidden">Jani</span>
+        BiL.Ly <span className="xl:hidden">Dinh</span>
       </h1>
       <div
         className={`${oldNewsPaper.className} project-info-text absolute top-[72%] z-20 flex w-full flex-col items-center gap-4 px-4 text-[0.7rem] opacity-0 xl:top-26 xl:right-6 xl:w-auto xl:p-0 xl:text-[0.9rem] 2xl:text-base`}
@@ -228,46 +236,52 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
         </div>
       </div>
       <div
+        style={{ perspective: "1000px" }}
         ref={imageContainerRef}
         className="absolute top-[47%] z-10 flex w-max -translate-y-1/2 items-center gap-4 opacity-0 brightness-100 [transform-style:preserve-3d] xl:top-1/2"
       >
         <>
           {projects.map((item, i) => {
             const mediaUrl = item.coverMedia?.asset?.url;
-            if (item.coverMedia?._type === "image") {
+            const isImage = item.coverMedia?._type === "image";
+
+            if (item.coverMedia) {
+              const imgUrl = isImage
+                ? urlFor(item.coverMedia)
+                    .width(600)
+                    .height(500)
+                    .quality(90)
+                    .url()
+                : null;
+
               return (
                 <div
-                  className="cursor-pointer"
+                  key={`set-name-${i}`}
+                  className="cursor-pointer [perspective:1000px]"
                   onClick={() => playTransition(`/works/${item._id}`)}
-                  key={`first-${i}`}
                 >
-                  <Image
-                    src={mediaUrl ? mediaUrl : ""}
-                    alt="avani rai photography"
-                    width={300}
-                    height={250}
-                    className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
-                    priority={i < 3}
-                    loading="eager"
-                  />
-                </div>
-              );
-            } else {
-              return (
-                <div
-                  className="cursor-pointer"
-                  onClick={() => playTransition(`/works/${item._id}`)}
-                  key={`first-${i}`}
-                >
-                  <video
-                    src={mediaUrl ? mediaUrl : ""}
-                    className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                  />
+                  <div className="project-media-inner will-change-transform [backface-visibility:hidden] [transform-style:preserve-3d]">
+                    {isImage ? (
+                      <Image
+                        src={imgUrl!}
+                        alt="photography"
+                        width={300}
+                        height={250}
+                        className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
+                        quality={90}
+                      />
+                    ) : (
+                      <video
+                        src={mediaUrl || ""}
+                        className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="auto"
+                      />
+                    )}
+                  </div>
                 </div>
               );
             }
@@ -276,41 +290,45 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
         <>
           {projects.map((item, i) => {
             const mediaUrl = item.coverMedia?.asset?.url;
+            const isImage = item.coverMedia?._type === "image";
 
-            if (item.coverMedia?._type === "image") {
+            if (item.coverMedia) {
+              const imgUrl = isImage
+                ? urlFor(item.coverMedia)
+                    .width(600)
+                    .height(500)
+                    .quality(90)
+                    .url()
+                : null;
+
               return (
                 <div
-                  className="cursor-pointer"
+                  key={`set-name-${i}`}
+                  className="cursor-pointer [perspective:1000px]"
                   onClick={() => playTransition(`/works/${item._id}`)}
-                  key={`second-${i}`}
                 >
-                  <Image
-                    src={mediaUrl ? mediaUrl : ""}
-                    alt="avani rai photography"
-                    width={300}
-                    height={250}
-                    className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
-                    priority={i < 3}
-                    loading="eager"
-                  />
-                </div>
-              );
-            } else {
-              return (
-                <div
-                  className="cursor-pointer"
-                  onClick={() => playTransition(`/works/${item._id}`)}
-                  key={`second-${i}`}
-                >
-                  <video
-                    src={mediaUrl ? mediaUrl : ""}
-                    className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                  />
+                  <div className="project-media-inner will-change-transform [backface-visibility:hidden] [transform-style:preserve-3d]">
+                    {isImage ? (
+                      <Image
+                        src={imgUrl!}
+                        alt="photography"
+                        width={300}
+                        height={250}
+                        className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
+                        quality={90}
+                      />
+                    ) : (
+                      <video
+                        src={mediaUrl || ""}
+                        className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="auto"
+                      />
+                    )}
+                  </div>
                 </div>
               );
             }
@@ -319,41 +337,45 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
         <>
           {projects.map((item, i) => {
             const mediaUrl = item.coverMedia?.asset?.url;
+            const isImage = item.coverMedia?._type === "image";
 
-            if (item.coverMedia?._type === "image") {
+            if (item.coverMedia) {
+              const imgUrl = isImage
+                ? urlFor(item.coverMedia)
+                    .width(600)
+                    .height(500)
+                    .quality(90)
+                    .url()
+                : null;
+
               return (
                 <div
-                  className="cursor-pointer"
+                  key={`set-name-${i}`}
+                  className="cursor-pointer [perspective:1000px]"
                   onClick={() => playTransition(`/works/${item._id}`)}
-                  key={`third-${i}`}
                 >
-                  <Image
-                    src={mediaUrl ? mediaUrl : ""}
-                    alt="avani rai photography"
-                    width={300}
-                    height={250}
-                    className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
-                    priority={i < 3}
-                    loading="eager"
-                  />
-                </div>
-              );
-            } else {
-              return (
-                <div
-                  className="cursor-pointer"
-                  onClick={() => playTransition(`/works/${item._id}`)}
-                  key={`third-${i}`}
-                >
-                  <video
-                    src={mediaUrl ? mediaUrl : ""}
-                    className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                  />
+                  <div className="project-media-inner will-change-transform [backface-visibility:hidden] [transform-style:preserve-3d]">
+                    {isImage ? (
+                      <Image
+                        src={imgUrl!}
+                        alt="photography"
+                        width={300}
+                        height={250}
+                        className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
+                        quality={90}
+                      />
+                    ) : (
+                      <video
+                        src={mediaUrl || ""}
+                        className="h-[300px] w-[250px] shrink-0 object-cover 2xl:h-[350px] 2xl:w-[300px]"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="auto"
+                      />
+                    )}
+                  </div>
                 </div>
               );
             }
@@ -384,14 +406,14 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
         <div
           className={`${oldNewsPaper.className} relative px-6 py-2 text-center text-[0.7rem] uppercase before:absolute before:top-0 before:left-0 before:h-4 before:w-4 before:border-t-2 before:border-l-2 before:content-[''] after:absolute after:right-0 after:bottom-0 after:h-4 after:w-4 after:border-r-2 after:border-b-2 after:content-[''] xl:text-left xl:text-base`}
         >
-          <p>Mumbai based</p>
+          <p>New York based</p>
           <p>photographer & filmmaker</p>
         </div>
       </div>
       <h1
         className={`${gralice.className} rai-title-text absolute right-8 bottom-0 z-10 hidden text-[16vw] leading-20 uppercase opacity-0 xl:block xl:leading-50 2xl:leading-56`}
       >
-        Jani
+        Dinh
       </h1>
     </div>
   );
