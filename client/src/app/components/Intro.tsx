@@ -130,9 +130,9 @@ const Intro = ({ onComplete }: IntroProps) => {
           </div>
         ))}
         <h1
-          className={`${gralice.className} title absolute bottom-16 left-1/2 -translate-x-1/2 scale-y-180 overflow-hidden text-6xl text-nowrap text-white uppercase opacity-0 mix-blend-difference md:text-7xl`}
+          className={`${gralice.className} title absolute bottom-12 left-1/2 -translate-x-1/2 scale-y-180 overflow-hidden text-6xl text-nowrap text-white uppercase opacity-0 mix-blend-difference md:text-7xl`}
         >
-          Harsh Jani
+          Billy Dinh
         </h1>
       </div>
     </div>

@@ -17,7 +17,7 @@ export default function HeaderWrapper() {
             href="/"
             className={`${gralice.className} text-3xl text-white uppercase xl:text-4xl`}
           >
-            Harsh Jani
+            Billy Dinh
           </Link>
         </div>
         <Header />

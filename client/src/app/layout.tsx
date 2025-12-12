@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Harsh Jani",
-  description: "Harish Jani photographer and filmmaker",
+  title: "Billy Dinh",
+  description: "Billy Dinh photographer and filmmaker",
 };
 
 export default function RootLayout({
