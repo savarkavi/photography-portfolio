@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import Image from "next/image";
+import { useRef } from "react";
 
 gsap.registerPlugin(useGSAP, SplitText);
 
@@ -12,26 +13,24 @@ type IntroProps = {
 };
 
 const Intro = ({ onComplete }: IntroProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
   const images = [
-    {
-      src: "/intro-img-1.webp",
-    },
-    {
-      src: "/intro-img-2.webp",
-    },
-    {
-      src: "/intro-img-3.webp",
-    },
-    {
-      src: "/intro-img-4.webp",
-    },
+    { src: "/intro-img-1.webp" },
+    { src: "/intro-img-2.webp" },
+    { src: "/intro-img-3.webp" },
+    { src: "/intro-img-4.webp" },
   ];
 
   useGSAP(
     () => {
+      gsap.ticker.lagSmoothing(0);
+
       const imageContainers =
         gsap.utils.toArray<HTMLDivElement>(".image-container");
-
       const split = new SplitText(".title", { type: "chars" });
 
       const firstChar = split.chars[0];
@@ -43,9 +42,10 @@ const Intro = ({ onComplete }: IntroProps) => {
 
       const masterTl = gsap.timeline({
         onComplete: () => {
-          onComplete();
+          onCompleteRef.current();
         },
       });
+
       const imagesTl = gsap.timeline();
 
       gsap.set(".title", { opacity: 1 });
@@ -70,11 +70,10 @@ const Intro = ({ onComplete }: IntroProps) => {
 
       imageContainers.forEach((container) => {
         const image = container.querySelector(".image");
-
         if (!image) return;
 
         const imageTl = gsap
-          .timeline({ defaults: { duration: 1, ease: "expo.inOut" } })
+          .timeline({ defaults: { duration: 0.8, ease: "expo.inOut" } })
           .to(container, {
             clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
           })
@@ -84,11 +83,11 @@ const Intro = ({ onComplete }: IntroProps) => {
       });
 
       const collapseImagesTl = gsap
-        .timeline({ defaults: { ease: "expo.inOut", duration: 1 } })
+        .timeline({ defaults: { ease: "expo.inOut", duration: 0.8 } })
         .to(imageContainers, {
           clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
         })
-        .to(".title", { bottom: "50%", translateY: "50%" }, "-=0.8");
+        .to(".title", { bottom: "50%", translateY: "50%" }, "-=0.5");
 
       const outroTl = gsap.timeline().to(".intro-container", {
         clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
@@ -102,12 +101,17 @@ const Intro = ({ onComplete }: IntroProps) => {
         .add(middleCharctersTl)
         .add(collapseImagesTl, "-=0.4")
         .add(outroTl);
+
+      return () => {
+        split.revert();
+      };
     },
-    { dependencies: [onComplete] },
+    { dependencies: [] },
   );
 
   return (
     <div
+      ref={containerRef}
       className="intro-container absolute top-0 left-0 z-10 flex h-screen w-full items-center justify-center bg-stone-950"
       style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
     >
