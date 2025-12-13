@@ -208,7 +208,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
       className="hero-container relative flex h-dvh flex-col justify-between overflow-hidden [perspective:1000px]"
     >
       <h1
-        className={`${gralice.className} avani-title-text absolute top-[14%] z-10 w-full text-center text-[16vw] leading-20 uppercase opacity-0 md:text-[15vw] xl:top-12 xl:left-6 xl:text-left xl:leading-50 2xl:top-20`}
+        className={`${gralice.className} avani-title-text absolute top-[12%] z-10 w-full text-center text-[16vw] leading-20 uppercase opacity-0 md:text-[15vw] xl:top-12 xl:left-6 xl:text-left xl:leading-50 2xl:top-20`}
       >
         BiL.Ly <span className="xl:hidden">Dinh</span>
       </h1>
