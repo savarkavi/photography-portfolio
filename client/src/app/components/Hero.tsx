@@ -171,9 +171,24 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
           },
         )
           .fromTo(
-            [".avani-title-text", ".avani-info-text"],
+            ".avani-title-text",
             { opacity: 0, x: -200 },
             { opacity: 1, x: 0, duration: 1 },
+            "<",
+          )
+          .fromTo(
+            ".avani-info-text",
+            {
+              opacity: 0,
+              x: window.innerWidth >= 1280 ? -200 : 0,
+              y: window.innerWidth >= 1280 ? 0 : 100,
+            },
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              duration: 1,
+            },
             "<",
           )
           .fromTo(
