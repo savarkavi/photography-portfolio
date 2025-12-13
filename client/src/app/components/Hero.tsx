@@ -417,7 +417,7 @@ const Hero = ({ featuredProjects, introComplete = false }: HeroProps) => {
         <div className="absolute top-0 left-0 h-6 w-[1.5px] bg-white" />
         <div className="absolute top-0 left-0 h-6 w-[1.5px] rotate-90 bg-white" />
       </div>
-      <div className="avani-info-text absolute bottom-6 left-1/2 w-full -translate-x-1/2 px-8 opacity-0 sm:w-fit sm:px-0 xl:left-[10%]">
+      <div className="avani-info-text absolute bottom-6 left-0 w-full px-8 opacity-0 sm:w-fit sm:px-0 xl:left-[10%] xl:-translate-x-1/2">
         <div
           className={`${oldNewsPaper.className} relative px-6 py-2 text-center text-[0.7rem] uppercase before:absolute before:top-0 before:left-0 before:h-4 before:w-4 before:border-t-2 before:border-l-2 before:content-[''] after:absolute after:right-0 after:bottom-0 after:h-4 after:w-4 after:border-r-2 after:border-b-2 after:content-[''] xl:text-left xl:text-base`}
         >
